@@ -11,15 +11,19 @@ import com.Library.LibrarySystem.repository.CustomerRepository;
 import com.Library.LibrarySystem.service.CustomerService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Service
 @AllArgsConstructor
 @Slf4j
-public class CustomerServiceImpl implements CustomerService {
+public class CustomerServiceImpl implements CustomerService, UserDetailsService {
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
 
@@ -101,5 +105,20 @@ public class CustomerServiceImpl implements CustomerService {
         if (request.getPhone() == null || request.getPhone().isEmpty()) {
             throw new ValidationException("Invalid Customer Phone Number");
         }
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+
+        Customer user = customerRepository.findUserByEmail(email);
+        List<String> roles = new ArrayList<>();
+        roles.add("CUSTOMER");
+        UserDetails userDetails =
+                org.springframework.security.core.userdetails.User.builder()
+                        .username(user.getEmail())
+                        .password(user.getCustomerName())
+                        .roles(roles.toArray(new String[0]))
+                        .build();
+        return userDetails;
     }
 }
