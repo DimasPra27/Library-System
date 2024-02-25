@@ -1,0 +1,82 @@
+// Soal 1
+function miniMaxSum(n) {
+  let sum = 0; 
+  for (let i = 0; i < n.length; i++) {
+    sum += n[i]; 
+  }
+
+  let min = 0;
+  let max = 0;
+  for (let i = 0; i < n.length; i++) {
+    const currentSum = sum - n[i];
+    if (currentSum <= min || min === 0) {
+      min = currentSum;
+    }
+    if (currentSum > max || max === 0) {
+      max = currentSum;
+    }
+  }
+
+  console.log(min, max); 
+}
+
+// Soal 2
+function plusMinus(arr)
+{
+	
+	let len = arr.length;
+
+	let positiveCount = 0;
+	let negativeCount = 0;
+	let zeroCount = 0;
+
+	for(let i = 0; i < len; i++)
+	{
+		if (arr[i] > 0)
+		{
+			positiveCount++;
+		}
+		else if (arr[i] < 0) 
+		{
+			negativeCount++;
+		}
+		else if (arr[i] == 0) 
+		{
+			zeroCount++;
+		}
+	}
+  resPositive = (positiveCount / len).toFixed(4);
+  resNegative = (negativeCount / len).toFixed(4);
+  resZero = (zeroCount / len).toFixed(4);
+
+  console.log(resPositive,resNegative,resZero);
+}
+
+//soal 3
+function convertTime(time) {
+  let hourOne = Number(time[1] - "0");
+  let hourTwo = Number(time[0] - "0");
+  let hours = hourTwo * 10 + (hourOne % 10);
+
+  let resConvert = "";
+
+  if (time[8] + time[9] == "AM") {
+    if (hours == 12) {
+      resConvert += "00";
+      for (var i = 2; i <= 7; i++) resConvert += time[i];
+    } else {
+      for (var i = 0; i <= 7; i++) resConvert += time[i];
+    }
+  } else {
+    if (hours == 12) {
+      resConvert += "12";
+      for (var i = 2; i <= 7; i++) resConvert += time[i];
+    } else {
+      hours = hours + 12;
+      resConvert += hours.toString();
+      for (var i = 2; i <= 7; i++) resConvert += time[i];
+    }
+  }
+
+  console.log(resConvert);
+}

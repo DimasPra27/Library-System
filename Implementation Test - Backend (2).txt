@@ -1,0 +1,114 @@
+Implementation Test - Backend (2)
+Untuk soal no 1 - 7 menggunakan postgresql
+untuk soal 8 di buat 2 query statment : postgresql dan sqlserver
+
+1. Tampilkan seluruh data dari tabel "employees" (5 Points)
+select 
+	*
+from employees
+
+2. Berapa banyak karyawan yang memiliki posisi pekerjaan (job title) "Manager"? (5 Points)
+select 
+	count(*)
+from employees
+where job_title = 'Manager'
+
+3. Tampilkan daftar nama dan gaji (salary) dari karyawan yang bekerja di departemen "Sales" atau
+"Marketing" (10 Points)
+select 
+	name,
+	salary
+from employees
+where department = 'Sales'
+
+4. Hitung rata-rata gaji (salary) dari karyawan yang bergabung (joined) dalam 5 tahun terakhir (berdasarkan
+kolom "joined_date") (10 Points)
+select
+	name,
+	avg(salary) as average_salary
+from employees
+where joined_date >= NOW() - INTERVAL '5' YEAR
+group by name
+
+5. Tampilkan 5 karyawan dengan total penjualan (sales) tertinggi dari tabel "employees" dan "sales_data"
+(10 Points)
+select 
+	e.name, 
+	sum(s.sales) as total_sales
+from employees e
+join sales_data s on e.employee_id = s.employee_id
+group by e.employee_id
+order by total_sales desc
+limit 5;
+
+6. Tampilkan nama, gaji (salary), dan rata-rata gaji (salary) dari semua karyawan yang bekerja di departemen
+yang memiliki rata-rata gaji lebih tinggi dari gaji rata-rata di semua departemen (15 Points) 
+select 
+	name,
+	salary,
+	x.avg_salary_dept as avarage_salary
+from employees e
+join (
+select 
+	department,
+	avg(e.salary) as avg_salary_dept
+from employees e
+group by department 
+) x on e.department = x.department
+where e.salary > x.avg_salary_dept
+
+7. Tampilkan nama dan total penjualan (sales) dari setiap karyawan, bersama dengan peringkat (ranking)
+masing-masing karyawan berdasarkan total penjualan. Peringkat 1 adalah karyawan dengan total
+penjualan tertinggi (25 Points)
+select 
+	e.name, 
+	sum(s.sales) as total_sales,
+    	rank() over (order by sum(s.sales) desc) as ranking
+from employees e
+join sales_data s ON e.employee_id = s.employee_id
+group by e.employee_id
+order by total_sales desc;
+
+8. Buat sebuah stored procedure yang menerima nama departemen sebagai input, dan mengembalikan
+daftar karyawan dalam departemen tersebut bersama dengan total gaji (salary) yang mereka terima (20
+Points)
+
+SQL Server : 
+
+create procedure get_employees_by_department (
+    @department_name VARCHAR(255)
+)
+as
+begin
+    select
+        e.name,
+        e.salary,
+        sum(s.sales) as total_sales
+    from employees e
+    join sales_data s on e.employee_id = s.employee_id
+    where e.department = @department_name
+    group by e.name, e.salary
+    order by e.name;
+end
+
+exec get_employees_by_department @department_name = 'Marketing';
+
+
+create or replace procedure get_employees_by_department(
+  IN department_name VARCHAR(255)
+)
+as $$
+begin
+  select
+    e.name,
+    e.salary,
+    sum(s.sales) as total_sales
+  from employees e
+  join sales_data s on e.employee_id = s.employee_id
+  where e.department = department_name
+  group by e.name,e.salary 
+  order by e.name;
+end =
+$$ language plpgsql;
+
+call get_employees_by_department('Marketing');
