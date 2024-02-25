@@ -102,10 +102,4 @@ public class CustomerServiceImpl implements CustomerService {
             throw new ValidationException("Invalid Customer Phone Number");
         }
     }
-
-//    @Override
-//    public UserDetails loadUserByUsername(String customerName) throws UsernameNotFoundException {
-//        Customer customer = customerRepository.findByCustomerName(customerName);
-//        return new User(customer.getCustomerName(), customer.getEmail(), new ArrayList<>());
-//    }
 }
